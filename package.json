@@ -4,12 +4,16 @@
   "description": "Fullstack open - Osa 13: relaatiotietokanta",
   "main": "cli.js",
   "scripts": {
-    "start": "node cli.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "dependencies": {
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "pg": "^8.11.0",
     "sequelize": "^6.37.8"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
