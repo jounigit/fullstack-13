@@ -34,4 +34,15 @@ router.delete('/:id', blogFinder, async (req, res) => {
   res.status(204).end();
 });
 
+router.put('/:id', blogFinder, async (req, res) => {
+  try {
+    req.blog.likes = req.body.likes;
+    await req.blog.save();
+    res.json(req.blog);
+  } catch (err) {
+    console.error('Error:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 module.exports = router;
