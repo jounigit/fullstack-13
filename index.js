@@ -12,8 +12,12 @@ const app = express();
 const errorHandler = (error, request, response, next) => {
   console.error(error.message)
 
+  if (error.name === 'SequelizeValidationError') {
+    return response.status(400).json({ error: error.message })
+  }
+
   next(error)
-}
+};
 
 app.use(express.json());
 app.use('/api/blogs', blogsRouter);
