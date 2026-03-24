@@ -33,7 +33,10 @@ router.post('/', tokenExtractor, async (req, res, next) => {
   }
 });
 
-router.delete('/:id', blogFinder, async (req, res) => {
+router.delete('/:id', tokenExtractor, blogFinder, async (req, res) => {
+  if (req.blog.userId !== req.userId) {
+    return res.status(403).json({ error: 'Forbidden: You can only delete your own blogs' });
+  }
   await req.blog.destroy();
   res.status(204).end();
 });
