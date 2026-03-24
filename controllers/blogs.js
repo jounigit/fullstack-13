@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { Blog } = require('../models');
+const { Blog, User } = require('../models');
 const { tokenExtractor } = require('../util/middleware');
 
 const blogFinder = async (req, res, next) => {
@@ -12,7 +12,13 @@ const blogFinder = async (req, res, next) => {
 
 router.get('/', async (req, res) => {
   try {
-    const blogs = await Blog.findAll();
+    const blogs = await Blog.findAll({
+      include: {
+        model: User,
+        attributes: ['name']
+      }
+    });
+
     res.json(blogs);
   } catch (err) {
     console.error('Error:', err);
@@ -35,7 +41,7 @@ router.post('/', tokenExtractor, async (req, res, next) => {
 
 router.delete('/:id', tokenExtractor, blogFinder, async (req, res) => {
   if (req.blog.userId !== req.userId) {
-    return res.status(403).json({ error: 'Forbidden: You can only delete your own blogs' });
+    return res.status(403).json({ error: 'Forbidden: This is not your blog.' });
   }
   await req.blog.destroy();
   res.status(204).end();
