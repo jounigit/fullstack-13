@@ -23,13 +23,8 @@ router.get('/', async (req, res) => {
           { title: { [Op.iLike]: `%${req.query.search || ''}%` } },
           {author: { [Op.iLike]: `%${req.query.search || ''}%` } }
         ]
-      }
-        // title: {
-        //   [Op.iLike]: `%${req.query.search || ''}%`
-        //   // [Op.substring]: req.query.search || ''
-        // }
-      // }
-
+      },
+      order: [['likes', 'DESC']]
     });
 
     res.json(blogs);
