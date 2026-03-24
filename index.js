@@ -1,7 +1,6 @@
 const express = require('express');
 const { PORT } = require('./util/config');
 const { connectToDatabase } = require('./util/db');
-const { tokenExtractor } = require('./util/middleware');
 const blogsRouter = require('./controllers/blogs');
 const usersRouter = require('./controllers/users');
 const loginRouter = require('./controllers/login');
