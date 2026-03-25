@@ -1,6 +1,7 @@
 const express = require('express');
 const { PORT } = require('./util/config');
 const { connectToDatabase } = require('./util/db');
+const { Blog, User } = require('./models');
 const blogsRouter = require('./controllers/blogs');
 const usersRouter = require('./controllers/users');
 const loginRouter = require('./controllers/login');
@@ -19,7 +20,20 @@ const errorHandler = (error, request, response, next) => {
 };
 
 app.use(express.json());
-// app.use(tokenExtractor);
+
+app.get('/', (req, res) => {
+  res.status(200).json({ message: 'Hello API!' });
+});
+
+app.post('/api/reset', async (req, res, next) => {
+  try {
+    await Blog.destroy({ where: {}, truncate: true, restartIdentity: true, cascade: true });
+    await User.destroy({ where: {}, truncate: true, restartIdentity: true, cascade: true });
+    return res.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+});
 
 app.use('/api/blogs', blogsRouter);
 app.use('/api/users', usersRouter);
