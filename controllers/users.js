@@ -38,11 +38,12 @@ router.post('/', async (req, res, next) => {
     }
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(password, saltRounds);
+    console.log('Password hash:', passwordHash);
 
     const newUser = await User.create({
       username,
       name,
-      passwordHash
+      password_hash: passwordHash
     });
 
     return res.status(201).json(newUser);

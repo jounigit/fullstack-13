@@ -17,9 +17,9 @@ module.exports = {
         type: DataTypes.STRING,
         allowNull: false
       },
-      passwordHash: {
+      password_hash: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: false
       },
       created_at: {
         type: DataTypes.DATE,
@@ -55,7 +55,7 @@ module.exports = {
           type: DataTypes.INTEGER,
           defaultValue: 0
         },
-        userId: {
+        user_id: {
           type: DataTypes.INTEGER,
           allowNull: false,
           references: { model: 'users', key: 'id' },
