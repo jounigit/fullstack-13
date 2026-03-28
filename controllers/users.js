@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const bcrypt = require('bcrypt');
-const { User, Blog } = require('../models');
+const { User, Blog, ReadingList } = require('../models');
 
 router.get('/', async (req, res) => {
   try {
@@ -11,6 +11,28 @@ router.get('/', async (req, res) => {
       }
     });
     res.json(users);
+  } catch (err) {
+    console.error('Error:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+router.get('/:id', async (req, res) => {
+  console.log('Fetching user with ID:', req.params.id);
+  try {
+    const user = await User.findByPk(req.params.id, {
+       include: {
+        model: Blog,
+        as: 'readings',
+        through: {
+          attributes: []
+        }
+      }
+    });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json(user);
   } catch (err) {
     console.error('Error:', err);
     res.status(500).json({ error: 'Internal Server Error' });
