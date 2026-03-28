@@ -30,6 +30,12 @@ const migrationConf = {
     });
   };
 
+  const rollbackMigrations = async () => {
+    await sequelize.authenticate()
+    const migrator = new Umzug(migrationConf)
+    await migrator.down()
+  };
+
 const connectToDatabase = async () => {
   try {
     await sequelize.authenticate();
@@ -44,5 +50,6 @@ const connectToDatabase = async () => {
 
 module.exports = {
   sequelize,
-  connectToDatabase
+  connectToDatabase,
+  rollbackMigrations
 };
