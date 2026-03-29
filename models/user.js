@@ -19,10 +19,6 @@ User.init({
   name: {
     type: DataTypes.STRING,
     allowNull: false
-  },
-  password_hash: {
-    type: DataTypes.STRING,
-    allowNull: false
   }
 }, {
   sequelize,

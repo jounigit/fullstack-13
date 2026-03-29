@@ -1,8 +1,15 @@
 const router = require('express').Router()
-const { User, Blog } = require('../models')
+const { User, Blog, ReadingLists } = require('../models')
+const { tokenExtractor } = require('../util/middleware')
 
 router.post('/', async (req, res) => {
     try {
+        if (!req.body.userId) {
+            return res.status(400).json({ error: 'userId is required' })
+        }
+        if (!req.body.blogId) {
+            return res.status(400).json({ error: 'blogId is required' })
+        }
         const user = await User.findByPk(req.body.userId)
         if (!user) {
             return res.status(404).json({ error: 'User not found' })
@@ -11,8 +18,53 @@ router.post('/', async (req, res) => {
         if (!blog) {
             return res.status(404).json({ error: 'Blog not found' })
         }
-        await user.addReadings(blog, { through: { read: req.body.read } })
-        res.status(200).json({ message: 'Reading list updated successfully' })
+        const existing = await ReadingLists.findOne({
+            where: {
+                userId: req.body.userId,
+                blogId: req.body.blogId
+            }
+        })
+        if (existing) {
+            return res.status(400).json({ error: 'Blog already in reading list' })
+        }
+        const readingList = await ReadingLists.create({
+            userId: req.body.userId,
+            blogId: req.body.blogId,
+            read: req.body.read || false
+        })
+        res.status(201).json(readingList)
+    } catch (err) {
+        console.error('Error:', err)
+        res.status(500).json({ error: 'Internal Server Error' })
+    }
+})
+
+router.get('/:id', async (req, res) => {
+    try {
+        const readingList = await ReadingLists.findByPk(req.params.id)
+        if (!readingList) {
+            return res.status(404).json({ error: 'Reading list entry not found' })
+        }
+        res.json(readingList)
+    } catch (err) {
+        console.error('Error:', err)
+        res.status(500).json({ error: 'Internal Server Error' })
+    }
+})
+
+router.put('/:id', tokenExtractor, async (req, res) => {
+    try {
+        const readingList = await ReadingLists.findByPk(req.params.id)
+        if (!readingList) {
+            return res.status(404).json({ error: 'Reading list entry not found' })
+        }
+        if (readingList.userId !== req.userId) {
+            return res.status(403).json({ error: 'Forbidden: This is not your list.' })
+        }
+
+        readingList.read = req.body.read
+        await readingList.save()
+        res.json(readingList)
     } catch (err) {
         console.error('Error:', err)
         res.status(500).json({ error: 'Internal Server Error' })

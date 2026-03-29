@@ -55,18 +55,11 @@ router.get('/:username', async (req, res) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    const { username, name, password } = req.body;
-    if (!password || password.length < 3) {
-      return res.status(400).json({ error: 'Password must be at least 3 characters long' });
-    }
-    const saltRounds = 10;
-    const passwordHash = await bcrypt.hash(password, saltRounds);
-    console.log('Password hash:', passwordHash);
+    const { username, name } = req.body;
 
     const newUser = await User.create({
       username,
-      name,
-      password_hash: passwordHash
+      name
     });
 
     return res.status(201).json(newUser);
