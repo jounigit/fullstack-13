@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const bcrypt = require('bcrypt');
-const { User, Blog, ReadingList } = require('../models');
+const { User, Blog, ReadingLists } = require('../models');
 
 router.get('/', async (req, res) => {
   try {
@@ -18,14 +18,15 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-  console.log('Fetching user with ID:', req.params.id);
   try {
     const user = await User.findByPk(req.params.id, {
-       include: {
+      attributes: ['username', 'name'],
+      include: {
         model: Blog,
         as: 'readings',
+        attributes: ['id', 'url', 'title', 'author', 'likes', 'year'],
         through: {
-          attributes: []
+          attributes: ['id', 'read']
         }
       }
     });

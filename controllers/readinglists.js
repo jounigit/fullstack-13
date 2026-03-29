@@ -11,8 +11,8 @@ router.post('/', async (req, res) => {
         if (!blog) {
             return res.status(404).json({ error: 'Blog not found' })
         }
-        await user.addReading_list(blog)
-        res.status(200).json({ message: 'Blog added to reading list' })
+        await user.addReadings(blog, { through: { read: req.body.read } })
+        res.status(200).json({ message: 'Reading list updated successfully' })
     } catch (err) {
         console.error('Error:', err)
         res.status(500).json({ error: 'Internal Server Error' })
