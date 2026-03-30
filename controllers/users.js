@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const bcrypt = require('bcrypt');
+const { Op } = require('sequelize');
 const { User, Blog, ReadingLists } = require('../models');
 
 router.get('/', async (req, res) => {
@@ -18,6 +18,12 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
+  const readFilter = {};
+  if (req.query.read === 'true') {
+    readFilter.read = true;  
+  } else if (req.query.read === 'false') {
+    readFilter.read = false; 
+  }
   try {
     const user = await User.findByPk(req.params.id, {
       attributes: ['username', 'name'],
@@ -26,7 +32,15 @@ router.get('/:id', async (req, res) => {
         as: 'readings',
         attributes: ['id', 'url', 'title', 'author', 'likes', 'year'],
         through: {
-          attributes: ['id', 'read']
+          attributes: ['id', 'read'],
+          where: readFilter
+          // where: {
+          //  [Op.or]: [
+          //     { read: req.query.read === 'true' ? true : null },
+          //     { read: req.query.read === 'false' ? false : null },
+          //     { read: req.query.read === undefined ? { [Op.not]: null } : null } 
+          //  ]
+          // }
         }
       }
     });
