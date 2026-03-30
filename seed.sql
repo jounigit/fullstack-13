@@ -1,7 +1,7 @@
 -- Insert two users
-INSERT INTO users (username, name, created_at, updated_at) VALUES
-('user1@example.com', 'Joni Tonttu', NOW(), NOW()),
-('user2@example.com', 'Jaana Saari', NOW(), NOW());
+INSERT INTO users (username, name, disabled, created_at, updated_at) VALUES
+('user1@example.com', 'Joni Tonttu', false, NOW(), NOW()),
+('user2@example.com', 'Jaana Saari', false, NOW(), NOW());
 
 -- Insert two blogs for each user
 INSERT INTO blogs (title, author, url, likes, year, user_id, created_at, updated_at) VALUES
