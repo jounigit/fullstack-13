@@ -1,10 +1,12 @@
 const router = require('express').Router();
 const { Op } = require('sequelize');
+const bcrypt = require('bcrypt');
 const { User, Blog, ReadingLists } = require('../models');
 
 router.get('/', async (req, res) => {
   try {
     const users = await User.findAll({
+      attributes: { exclude: ['passwordHash'] },
       include: {
         model: Blog,
         attributes: { exclude: ['userId'] }
@@ -69,11 +71,16 @@ router.get('/:username', async (req, res) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    const { username, name } = req.body;
+    const { username, name, password } = req.body;
+  
+    const saltRounds = 10;
+    const passwordHash = await bcrypt.hash(password, saltRounds);
+    console.log('Password hash:', passwordHash);
 
     const newUser = await User.create({
       username,
-      name
+      name,
+      passwordHash
     });
 
     return res.status(201).json(newUser);

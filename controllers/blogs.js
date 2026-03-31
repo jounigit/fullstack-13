@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { Blog, User } = require('../models');
-const { tokenExtractor } = require('../util/middleware');
+const { tokenExtractor, sessionChecker } = require('../util/middleware');
 const { Op } = require('sequelize');
 
 const blogFinder = async (req, res, next) => {
@@ -34,7 +34,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.post('/', tokenExtractor, async (req, res, next) => {
+router.post('/', tokenExtractor, sessionChecker, async (req, res, next) => {
   try {
     const newBlog = await Blog.create({
       ...req.body,
@@ -47,7 +47,7 @@ router.post('/', tokenExtractor, async (req, res, next) => {
   }
 });
 
-router.delete('/:id', tokenExtractor, blogFinder, async (req, res) => {
+router.delete('/:id', tokenExtractor, sessionChecker, blogFinder, async (req, res) => {
   if (req.blog.userId !== req.userId) {
     return res.status(403).json({ error: 'Forbidden: This is not your blog.' });
   }
