@@ -27,25 +27,7 @@ router.get('/:id', async (req, res) => {
     readFilter.read = false; 
   }
   try {
-    const user = await User.findByPk(req.params.id, {
-      attributes: ['username', 'name'],
-      include: {
-        model: Blog,
-        as: 'readings',
-        attributes: ['id', 'url', 'title', 'author', 'likes', 'year'],
-        through: {
-          attributes: ['id', 'read'],
-          where: readFilter
-          // where: {
-          //  [Op.or]: [
-          //     { read: req.query.read === 'true' ? true : null },
-          //     { read: req.query.read === 'false' ? false : null },
-          //     { read: req.query.read === undefined ? { [Op.not]: null } : null } 
-          //  ]
-          // }
-        }
-      }
-    });
+    const user = await User.findWithReadings(req.params.id, readFilter);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }

@@ -32,7 +32,12 @@ router.post('/', async (req, res) => {
             blogId: req.body.blogId,
             read: req.body.read || false
         })
-        res.status(201).json(readingList)
+        res.status(201).json({ 
+            id: readingList.id, 
+            user_id: readingList.userId, 
+            blog_id: readingList.blogId,
+            read: readingList.read
+        })
     } catch (err) {
         console.error('Error:', err)
         res.status(500).json({ error: 'Internal Server Error' })
@@ -59,7 +64,7 @@ router.put('/:id', tokenExtractor, sessionChecker, async (req, res) => {
             return res.status(404).json({ error: 'Reading list entry not found' })
         }
         if (readingList.userId !== req.userId) {
-            return res.status(403).json({ error: 'Forbidden: This is not your list.' })
+            return res.status(401).json({ error: 'Unauthorized: This is not your list.' })
         }
 
         readingList.read = req.body.read
